@@ -1,0 +1,3 @@
+[submodule "notes/standardnotes-extensions"]
+	path = notes/standardnotes-extensions
+	url = https://github.com/iganeshk/standardnotes-extensions.git
