@@ -1,0 +1,13 @@
+/adminscripts/Syrupy/*.log
+/adminscripts/Syrupy/*.raw
+/ftp/conf-*
+/ftp/home-*
+/gitea/gitea_data
+/gitea/postgres
+/notes/standardfile.db
+/notes/standardfile.yml
+/recipes/mealie
+/traefik/letsencrypt
+/traefik/.env
+/wizz/app/venv
+*.secret

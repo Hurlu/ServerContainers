@@ -1,0 +1,30 @@
+version: "3.3"
+
+networks:
+  default:
+    external: false
+
+services:
+  traefik:
+    image: "traefik:v2.5.3"
+    container_name: "traefik"
+    networks:
+      - default
+    ports:
+     - "80:80"
+     - "443:443"
+     - "2222:2222"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "./letsencrypt:/letsencrypt"
+      - "./traefik.toml:/etc/traefik/traefik.toml"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.traefik.rule=Host(`rproxy.hugowillaume.com`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))"
+      - "traefik.http.routers.traefik.service=api@internal"
+      - "traefik.http.routers.traefik.entrypoints=web"
+      - "traefik.http.middlewares.admin.basicauth.users=${USER_NAME}:${USER_PWDHASH}"
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+      - "traefik.http.routers.redirs.rule=hostregexp(`{host:.+}`)"
+      - "traefik.http.routers.redirs.entrypoints=web"
+      - "traefik.http.routers.redirs.middlewares=redirect-to-https"

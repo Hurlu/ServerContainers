@@ -1,0 +1,1 @@
+place folder adminscripts next to all other services folders

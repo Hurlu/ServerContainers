@@ -1,0 +1,32 @@
+[entryPoints]
+  [entryPoints.web]
+    address = ":80"
+
+  [entryPoints.websecure]
+    address = ":443"
+
+  [entryPoints.sftp]
+    address = ":2222"
+
+#[providers.file]
+#   directory = "/etc/traefik/config"
+
+[providers.docker]
+  exposedByDefault = false
+  network = "traefik_default"
+
+[certificatesResolvers.myhttpchallenge.acme]
+  email = "mr.hurlu@gmail.com"
+  storage = "/letsencrypt/acme.json"
+  [certificatesResolvers.myhttpchallenge.acme.httpChallenge]
+    entryPoint = "web"
+
+
+[api]
+  dashboard = true
+
+[accessLog]
+#[tracing]
+#  serviceName = "traefik-traefik"
+[log]
+  level = "DEBUG"

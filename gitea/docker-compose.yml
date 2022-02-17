@@ -1,0 +1,38 @@
+version: "3.5"
+
+networks:
+  gitea:
+    external: false
+
+  traefik_default:
+    external: true    
+
+services:
+  gitea:
+    container_name: gitea
+    image: gitea/gitea:1.15.5
+    restart: always
+    env_file: ./secrets/gitea.secret
+    networks:
+      - gitea
+      - traefik_default
+    volumes:
+      - ./gitea_data:/data
+    depends_on:
+      - db
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.gitea.rule=Host(`git.hugowillaume.com`)"
+      - "traefik.http.routers.gitea.entrypoints=websecure"
+      - "traefik.http.routers.gitea.tls.certresolver=myhttpchallenge"
+      - "traefik.http.services.gitea.loadbalancer.server.port=3000"
+
+  db:
+    container_name: gitea_db
+    image: postgres:9.6
+    restart: always
+    env_file: ./secrets/gitea_db.secret
+    networks:
+     - gitea
+    volumes:
+     - ./postgres:/var/lib/postgresql/data

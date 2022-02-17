@@ -1,0 +1,8 @@
+-i : polling interval in seconds
+-m : poll the most memory intensive processes
+-S : to standard output
+
+https://github.com/jeetsukumaran/Syrupy
+
+ps -1 syrupy | grep syrup;
+syrupy -m 5 -i 30&

@@ -1,0 +1,20 @@
+version: '3.5'
+
+services:
+  wizz:
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+    container_name: wizz
+    networks:
+      - traefik_default
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.wizz.rule=Host(`wizz.hugowillaume.com`)"
+      - "traefik.http.routers.wizz.entrypoints=websecure"
+      - "traefik.http.routers.wizz.tls.certresolver=myhttpchallenge"
+      - "traefik.http.services.wizz.loadbalancer.server.port=80"
+
+networks:
+  traefik_default:
+    external: true

@@ -1,0 +1,30 @@
+version: "3"
+services:
+  mealie:
+    container_name: mealie
+    restart: always
+    image: hkotel/mealie:v0.5.3
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: Europe/Paris      
+      RECIPE_PUBLIC: 'true'
+      RECIPE_SHOW_NUTRITION: 'true'
+      RECIPE_SHOW_ASSETS: 'true'
+      RECIPE_LANDSCAPE_VIEW: 'false'
+      RECIPE_DISABLE_COMMENTS: 'true'
+      RECIPE_DISABLE_AMOUNT: 'false'
+    volumes:
+      - ./mealie/data:/app/data
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.recipes.rule=Host(`recipes.hugowillaume.com`)"
+      - "traefik.http.routers.recipes.entrypoints=websecure"
+      - "traefik.http.routers.recipes.tls.certresolver=myhttpchallenge"
+      - "traefik.http.services.recipes.loadbalancer.server.port=80"
+    networks:
+      - traefik_default
+
+networks:
+  traefik_default:
+    external: true
