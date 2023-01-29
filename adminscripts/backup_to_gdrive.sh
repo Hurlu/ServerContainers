@@ -1,8 +1,10 @@
+#!/bin/bash
+
 SCRIPT_DIR=$(cd $(dirname "${BASH_SOURCE[0]}") && pwd)
 GLOB_DIR=$SCRIPT_DIR/..
 
 
-SERVICES=( gitea notes recipes )
+SERVICES=( notes recipes gitea )
 
 for service in "${SERVICES[@]}"
 do
