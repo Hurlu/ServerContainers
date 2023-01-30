@@ -37,7 +37,7 @@ cd $GLOB_DIR/gitea
 # restore gitea: https://docs.gitea.io/en-us/backup-and-restore/#restore-command-restore
 
 # update crontab to call backup_to_gdrive every 8 hours: (crontab -e, no need for sudo)
-#* */8 * * * /home/hurlu/ServerContainers/adminscripts/backup_to_gdrive.sh
+#0 */8 * * * /home/hurlu/ServerContainers/adminscripts/backup_to_gdrive.sh
 # manually go to my sample files in each container folder to write actual secrets
 # run server containers
 # profit :]
