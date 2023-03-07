@@ -7,6 +7,9 @@
 
   [entryPoints.sftp]
     address = ":2222"
+   
+  [entryPoints.terraria]
+    address = ":7777"
 
 #[providers.file]
 #   directory = "/etc/traefik/config"

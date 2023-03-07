@@ -7,6 +7,7 @@
 /notes/standardfile.db
 /notes/standardfile.yml
 /recipes/mealie
+/terraria/config
 /traefik/letsencrypt
 /traefik/.env
 /wizz/app/venv

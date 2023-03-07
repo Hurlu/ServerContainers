@@ -1,0 +1,27 @@
+version: '3'
+
+services:
+  terraria:
+    image: ghcr.io/beardedio/terraria:latest
+    container_name: terraria
+    ports:
+      - '7777:7777'
+    restart: unless-stopped
+    environment:
+      - world=BurgerFamily.wld
+    volumes:
+      - ./config:/config
+#    tty: true
+#    stdin_open: true
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.terraria.rule=Host(`terraria.hugowillaume.com`)"
+      - "traefik.http.routers.terraria.entrypoints=terraria"
+      - "traefik.http.services.terraria.loadbalancer.server.port=7777"
+    networks:
+      - traefik_default
+
+networks:
+  traefik_default:
+    external: true
+         
