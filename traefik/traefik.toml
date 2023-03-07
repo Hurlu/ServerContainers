@@ -11,6 +11,9 @@
   [entryPoints.terraria]
     address = ":7777"
 
+  [entryPoints.terraria_api]
+    address = ":7878"
+
 #[providers.file]
 #   directory = "/etc/traefik/config"
 

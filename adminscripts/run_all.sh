@@ -1,7 +1,7 @@
 SCRIPT_DIR=$(cd $(dirname "${BASH_SOURCE[0]}") && pwd)
 GLOB_DIR=$SCRIPT_DIR/..
 
-SERVICES=( traefik gitea wizz ftp notes recipes )
+SERVICES=( traefik gitea wizz ftp notes recipes terraria )
 
 for service in "${SERVICES[@]}"
 do
