@@ -1,5 +1,6 @@
 /adminscripts/Syrupy/*.log
 /adminscripts/Syrupy/*.raw
+/adminscripts/hub_token
 /ftp/conf-*
 /ftp/home-*
 /gitea/gitea_data
@@ -7,6 +8,7 @@
 /notes/standardfile.db
 /notes/standardfile.yml
 /recipes/mealie
+/teamspeak/data
 /terraria/config
 /traefik/letsencrypt
 /traefik/.env
