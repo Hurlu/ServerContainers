@@ -8,8 +8,7 @@ services:
       - '7777:7777'
       - '7878:7878'
     restart: unless-stopped
-    environment:
-      - world=BurgerFamily.wld
+    env_file: ./env.file
     volumes:
       - ./config:/config
     labels:
