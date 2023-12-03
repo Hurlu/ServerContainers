@@ -6,9 +6,9 @@ services:
     image: teamspeak
     container_name: teamspeak
     ports:
-      - 9987:9987/udp
-      - 10011:10011
-      - 30033:30033
+      - 9987:9987/udp       #udp voice port
+      - 10080:10080
+      - 30033:30033         #file transfer port
     restart: unless-stopped
     env_file: ./secrets/teamspeak.secret
     volumes:
@@ -19,10 +19,12 @@ services:
     image: mariadb
     restart: always
     env_file: ./secrets/teamspeak.secret
+    volumes:
+      - ./dbvolume:/var/lib/mysql
     networks:
      - teamspeak
 
 
 networks:
   teamspeak:
-    external: false         
+    external: false
