@@ -5,6 +5,3 @@ cd $SCRIPT_DIR;
 mv gitea_data/git/gitea-dump* gitea_backup.zip;
 rclone copy gitea_backup.zip Gdrive:/;
 rm -f gitea_backup.zip;
-
-
-
