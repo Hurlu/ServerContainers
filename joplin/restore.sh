@@ -9,4 +9,5 @@ docker exec \
 -e POSTGRES_USER \
 -e POSTGRES_DB \
 $(docker ps -qf "name=joplin_db") \
-bash -c "psql -U $POSTGRES_USER $POSTGRES_DB" < postgres_joplin.sql
+-v $SCRIPT_DIR/postgres_joplin.sql:/tmp/backupdata \
+bash -c "psql -U $POSTGRES_USER $POSTGRES_DB < /tmp/backupdata"
