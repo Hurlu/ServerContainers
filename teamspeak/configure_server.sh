@@ -1,6 +1,6 @@
 #required packages: httpie, jq
 
-DOCKER_IP=$(docker inspect --format '{{ range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' teamspeak2)
+DOCKER_IP=$(docker inspect --format '{{ range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' teamspeak)
 BASE_COMMAND="http $DOCKER_IP:10080/1"
 API_KEY="?api-key=$(cat api_key.secret)"
 

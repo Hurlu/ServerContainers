@@ -5,10 +5,12 @@
 /ftp/home-*
 /gitea/gitea_data
 /gitea/postgres
+/joplin/joplin_data
 /notes/standardfile.db
 /notes/standardfile.yml
 /recipes/mealie
 /teamspeak/data
+/teamspeak/dbvolume
 /terraria/config
 /traefik/letsencrypt
 /traefik/.env

@@ -3,7 +3,7 @@ version: '3.7'
 # Not run through traefik, causes too much slowdown: instead, using a DNS SRV rule.
 services:
   teamspeak:
-    image: teamspeak
+    image: teamspeak:3.13.7
     container_name: teamspeak
     ports:
       - 9987:9987/udp       #udp voice port
@@ -16,7 +16,8 @@ services:
     networks:
       - teamspeak
   db:
-    image: mariadb
+    image: mariadb:11.0.3
+    container_name: teamspeak-db
     restart: always
     env_file: ./secrets/teamspeak.secret
     volumes:
