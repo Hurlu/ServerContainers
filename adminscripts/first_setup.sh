@@ -21,6 +21,7 @@ sudo apt install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin;
 mkdir ~/Downloads;
 git remote add myserv git.hugowillaume.com/Hurlu/ServerContainers;
 # setup my rclone remote named "Gdrive" with advanced option root folder 1Vtw9u>
+# as well as a remote named "rootGdrive" with readonly access to just get my backups here too
 rclone config
 # reinstall my backup data
 cd ~/Downloads;
@@ -38,7 +39,9 @@ cd $GLOB_DIR/gitea
 
 # update crontab to call backup_to_gdrive every 8 hours: (crontab -e, no need for sudo)
 #0 */8 * * * /home/hurlu/ServerContainers/adminscripts/backup_to_gdrive.sh
+# and backup_from_gdrive every 72 hours:
+#0 4 */3 * * /home/hurlu/ServerContainers/adminscripts/backup_from_gdrive.sh
 # manually go to my sample files in each container folder to write actual secrets
 # run server containers
-# profit :]
+# enjoy :]
 

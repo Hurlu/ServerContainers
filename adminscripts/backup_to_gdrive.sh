@@ -4,7 +4,7 @@ SCRIPT_DIR=$(cd $(dirname "${BASH_SOURCE[0]}") && pwd)
 GLOB_DIR=$SCRIPT_DIR/..
 
 
-SERVICES=( notes recipes gitea joplin )
+SERVICES=( recipes gitea joplin )
 
 for service in "${SERVICES[@]}"
 do
