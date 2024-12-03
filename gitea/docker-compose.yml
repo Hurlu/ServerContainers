@@ -1,6 +1,3 @@
-version: "3.8"
-#ideally, i'd like to upgrade docker-compose version 1.25.5 at least to use v3.8 and later, where mem_limit works outside of a swarm deploy.
-
 networks:
   gitea:
     external: false
@@ -11,7 +8,7 @@ networks:
 services:
   gitea:
     container_name: gitea
-    image: gitea/gitea:1.15.5
+    image: gitea/gitea:1.22.4
     restart: always
     env_file: ./secrets/gitea.secret
     networks:
@@ -27,7 +24,7 @@ services:
       - "traefik.http.routers.gitea.entrypoints=websecure"
       - "traefik.http.routers.gitea.tls.certresolver=myhttpchallenge"
       - "traefik.http.services.gitea.loadbalancer.server.port=3000"
-    mem_limit: 1g
+    mem_limit: 200m
 
   db:
     container_name: gitea_db
