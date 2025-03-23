@@ -14,8 +14,9 @@
   [entryPoints.terraria_api]
     address = ":7878"
 
-#[providers.file]
-#   directory = "/etc/traefik/config"
+[providers.file]
+   directory = "/etc/traefik/config"
+   watch = true
 
 [providers.docker]
   exposedByDefault = false
@@ -24,9 +25,6 @@
 [certificatesResolvers.myhttpchallenge.acme]
   email = "mr.hurlu@gmail.com"
   storage = "/letsencrypt/acme.json"
-  [certificatesResolvers.myhttpchallenge.acme.httpChallenge]
-    entryPoint = "web"
-
 
 [api]
   dashboard = true

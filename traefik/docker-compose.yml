@@ -18,6 +18,7 @@ services:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       - "./letsencrypt:/letsencrypt"
       - "./traefik.toml:/etc/traefik/traefik.toml"
+      - "./config:/etc/traefik/config"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.traefik.rule=Host(`rproxy.hugowillaume.com`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))"
