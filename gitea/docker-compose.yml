@@ -24,7 +24,7 @@ services:
       - "traefik.http.routers.gitea.entrypoints=websecure"
       - "traefik.http.routers.gitea.tls.certresolver=myhttpchallenge"
       - "traefik.http.services.gitea.loadbalancer.server.port=3000"
-    mem_limit: 400m
+    mem_limit: 800m
 
   db:
     container_name: gitea_db
