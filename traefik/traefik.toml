@@ -25,6 +25,8 @@
 [certificatesResolvers.myhttpchallenge.acme]
   email = "mr.hurlu@gmail.com"
   storage = "/letsencrypt/acme.json"
+  [certificatesResolvers.myhttpchallenge.acme.httpChallenge]
+    entryPoint = "web"
 
 [api]
   dashboard = true
