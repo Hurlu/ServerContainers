@@ -5,6 +5,7 @@ services:
   teamspeak:
     image: teamspeak:3.13.7
     container_name: teamspeak
+    restart: always
     ports:
       - 9987:9987/udp       #udp voice port
       - 10080:10080

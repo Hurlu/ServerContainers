@@ -1,5 +1,3 @@
-version: "3.3"
-
 networks:
   default:
     external: false
@@ -8,6 +6,7 @@ services:
   traefik:
     image: "traefik:v2.5.3"
     container_name: "traefik"
+    restart:always
     networks:
       - default
     ports:
@@ -24,8 +23,31 @@ services:
       - "traefik.http.routers.traefik.rule=Host(`rproxy.hugowillaume.com`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))"
       - "traefik.http.routers.traefik.service=api@internal"
       - "traefik.http.routers.traefik.entrypoints=web"
-      - "traefik.http.middlewares.admin.basicauth.users=${USER_NAME}:${USER_PWDHASH}"
       - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
       - "traefik.http.routers.redirs.rule=hostregexp(`{host:.+}`)"
       - "traefik.http.routers.redirs.entrypoints=web"
       - "traefik.http.routers.redirs.middlewares=redirect-to-https"
+
+  traefik-forward-auth:
+    image: thomseddon/traefik-forward-auth:2
+    container_name: auth_forward
+    restart:always
+    networks:
+      - default
+    env_file: secrets/traefik_forward_auth.secret
+    environment:
+      # INSECURE_COOKIE is required if not using a https entrypoint
+      - INSECURE_COOKIE=false
+      - COOKIE_DOMAIN=hugowillaume.com
+#      - AUTH_HOST=auth.hugowillaume.com
+      - LOG_LEVEL=debug
+      - LOG_FORMAT=json
+      - MATCH_WHITELIST_OR_DOMAIN=true
+      - DOMAIN=sloclap.com
+      - WHITELIST=mr.hurlu@gmail.com
+    labels:
+      - "traefik.enable=true"
+ #     - "traefik.http.routers.traefik-forward-auth.rule=Host(`auth.hugowillaume.com`)"
+      - "traefik.http.services.traefik-forward-auth.loadbalancer.server.port=4181"
+      - "traefik.http.middlewares.traefik-forward-auth.forwardauth.address=http://traefik-forward-auth:4181"
+      - "traefik.http.middlewares.traefik-forward-auth.forwardauth.authResponseHeaders=X-Forwarded-User"

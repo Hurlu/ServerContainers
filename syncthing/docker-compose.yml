@@ -1,0 +1,34 @@
+version: "3"
+
+networks:
+  traefik_default:
+    external: true
+
+services:
+  syncthing:
+    image: syncthing/syncthing:1.29.3
+    container_name: syncthing
+    environment:
+      - PUID=1000
+      - PGID=1000
+    volumes:
+      - ./data:/var/syncthing
+#    ports:
+#      - 8384:8384 # Web UI
+#      - 22000:22000/tcp # TCP file transfers
+#      - 22000:22000/udp # QUIC file transfers
+#      - 21027:21027/udp # Receive local discovery broadcasts
+    restart: always
+    networks: 
+     - traefik_default
+    healthcheck:
+      test: curl -fkLsS -m 2 127.0.0.1:8384/rest/noauth/health | grep -o --color=never OK || exit 1
+      interval: 1m
+      timeout: 10s
+      retries: 3
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.syncthing.rule=Host(`syncthing.hugowillaume.com`)"
+      - "traefik.http.routers.syncthing.entrypoints=websecure"
+      - "traefik.http.routers.syncthing.tls.certresolver=myhttpchallenge"
+      - "traefik.http.services.syncthing.loadbalancer.server.port=8384"

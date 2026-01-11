@@ -1,26 +1,20 @@
-version: '3.5'
-
 services:
-  ftp:
-    container_name: ftp
-    image: drakkan/sftpgo:v2.1.2-alpine-slim
+  hangftp:
+    image: drakkan/sftpgo:v2.6.6-alpine-slim
+    container_name: hang_ftp
+    restart:always
     networks:
       - traefik_default
     volumes:
-      - ./home-sftpgo:/srv/sftpgo/data
-      - ./conf-sftpgo:/var/lib/sftpgo
-    environment:
-      - SFTPGO_WEBDAVD__BINDINGS__0__PORT=10080
+      - /mnt/Music:/srv/sftpgo/data
+      - ./conf-hangsftpgo:/var/lib/sftpgo
     labels:
       - "traefik.enable=true"
-      - "traefik.tcp.routers.ftp.rule=HostSNI(`*`)"
-      - "traefik.tcp.routers.ftp.entrypoints=sftp" #2222
-      - "traefik.tcp.services.ftp.loadbalancer.server.port=2022"
-
-      - "traefik.http.routers.uiftp.rule=Host(`ftp.hugowillaume.com`)"
-      - "traefik.http.routers.uiftp.entrypoints=websecure"
-      - "traefik.http.routers.uiftp.tls.certresolver=myhttpchallenge"
-      - "traefik.http.services.uiftp.loadbalancer.server.port=8080"
+      - "traefik.http.routers.hangftp.rule=Host(`sftp.hang.hugowillaume.com`)"
+      - "traefik.http.routers.hangftp.entrypoints=websecure"
+      - "traefik.http.routers.hangftp.tls.certresolver=myhttpchallenge"
+      - "traefik.http.services.hangftp.loadbalancer.server.port=8080"
+      - "traefik.http.routers.hangftp.middlewares=traefik-forward-auth"
 
 networks:
   traefik_default:

@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+    <title>Making a Perforce Server With Docker :: Ari Codes</title>
+  
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="There&#39;s not many Perforce docker images out there. Here&#39;s why, and how to make one." />
+<meta name="keywords" content="perforce, docker, docker compose, docker-compose, tutorials, perforce on docker, how to make a perforce server with docker, how to, how-to" />
+<meta name="robots" content="noodp" />
+<link rel="canonical" href="index.html" />
+
+
+
+
+<link rel="stylesheet" href="../../assets/style.css">
+
+  <link rel="stylesheet" href="../../assets/blue.css">
+
+
+
+
+
+
+<link rel="apple-touch-icon" href="https://aricodes.net/img/apple-touch-icon-192x192.png">
+
+  <link rel="shortcut icon" href="../../img/favicon/blue.png">
+
+
+
+<meta name="twitter:card" content="summary" />
+
+  
+    <meta name="twitter:site" content="aricodes.net" />
+  
+    <meta name="twitter:creator" content="realwillowtw" />
+
+
+
+<meta property="og:locale" content="en" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Making a Perforce Server With Docker">
+<meta property="og:description" content="There&#39;s not many Perforce docker images out there. Here&#39;s why, and how to make one." />
+<meta property="og:url" content="/posts/perforce-server-with-docker/" />
+<meta property="og:site_name" content="Ari Codes" />
+
+  <meta property="og:image" content="https://techmeetups.com/wp-content/uploads/2013/08/Perforce.png">
+
+<meta property="og:image:width" content="2048">
+<meta property="og:image:height" content="1024">
+
+
+  <meta property="article:published_time" content="2021-05-28 16:49:12 -0400 -0400" />
+
+
+
+
+
+
+
+
+
+<script async defer data-domain="aricodes.net" src="https://plausible.aricodes.net/js/plausible.js"></script>
+
+
+</head>
+<body class="blue">
+
+
+<div class="container center headings--one-size">
+
+  <header class="header">
+  <div class="header__inner">
+    <div class="header__logo">
+      <a href="https://aricodes.net/">
+  <div class="logo">
+    Ari Codes
+  </div>
+</a>
+
+    </div>
+    
+      <div class="menu-trigger">menu</div>
+    
+  </div>
+  
+    <nav class="menu">
+  <ul class="menu__inner menu__inner--desktop">
+    
+      
+        
+          <li><a href="https://aricodes.net/about">About</a></li>
+        
+      
+        
+          <li><a href="https://aricodes.net/contact">Contact</a></li>
+        
+      
+        
+          <li><a href="https://www.patreon.com/aricodes">Patreon</a></li>
+        
+      
+    
+
+    
+  </ul>
+
+  <ul class="menu__inner menu__inner--mobile">
+    
+      
+        <li><a href="https://aricodes.net/about">About</a></li>
+      
+    
+      
+        <li><a href="https://aricodes.net/contact">Contact</a></li>
+      
+    
+      
+        <li><a href="https://www.patreon.com/aricodes">Patreon</a></li>
+      
+    
+    
+  </ul>
+</nav>
+
+  
+</header>
+
+
+  <div class="content">
+    
+<div class="post">
+  <h1 class="post-title">
+    <a href="index.html">Making a Perforce Server With Docker</a></h1>
+  <div class="post-meta">
+    
+      <span class="post-date">
+        2021-05-28 
+      </span>
+    
+    
+    <span class="post-author">:: Ari</span>
+    
+  </div>
+
+  
+  <span class="post-tags">
+    
+    #<a href="https://aricodes.net/tags/perforce/">perforce</a>&nbsp;
+    
+    #<a href="https://aricodes.net/tags/docker/">docker</a>&nbsp;
+    
+    #<a href="https://aricodes.net/tags/getting-started/">getting started</a>&nbsp;
+    
+    #<a href="https://aricodes.net/tags/tutorials/">tutorials</a>&nbsp;
+    
+    #<a href="https://aricodes.net/tags/intermediate/">intermediate</a>&nbsp;
+    
+  </span>
+  
+
+  
+    <img src="https://techmeetups.com/wp-content/uploads/2013/08/Perforce.png" class="post-cover" alt="Making a Perforce Server With Docker" />
+  
+
+  
+
+  <div class="post-content"><div>
+        <h1 id="purpose">Purpose<a href="index.html#purpose" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h1>
+<p>There&rsquo;s not many <a href="https://www.perforce.com/">Perforce</a> docker images out there, and I haven&rsquo;t found <em>any</em> that are maintained and well documented. There&rsquo;s actually a pretty good reason for that - Perforce is <em>messy</em>. It leaves files all over the system, there&rsquo;s no real option to constrain it to a specific area, and it makes some assumptions about how you want your system to be run that don&rsquo;t really translate to a containerized environment very well.</p>
+<p>Fortunately, because Docker is magic, we can remedy most of these things. By the end of this, you&rsquo;ll have your own Perforce server running comfortably on your own infrastructure. We&rsquo;ll be using the industry standard <code>docker-compose</code> container orchestrator for this, but a similar configuration can be shipped to Docker Swarm and Kubernetes.</p>
+<p>As this is targetted at people that <em>probably</em> aren&rsquo;t running large scale clustering software, we&rsquo;re going to stick with <code>docker-compose</code> and focus on a single server.</p>
+<h1 id="what-is-perforce">What is Perforce?<a href="index.html#what-is-perforce" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h1>
+<p><a href="https://www.perforce.com/">Perforce</a> is a version control system geared towards game developers. It handles large files, binary files, and locks on those files better than most other version control systems. Other version control systems you may be familiar with are <code>git</code>, <code>subversion</code> (or <code>svn</code> for short), and <code>mercurial</code> (or <code>hg</code> for short).</p>
+<p>For most workloads, you&rsquo;d want to choose <code>git</code>. That statement is almost purely backed by my opinion, but <code>git</code> is the most popular version control system for a reason. It&rsquo;s fantastic for <em>most</em> things.</p>
+<p>One thing <code>git</code> doesn&rsquo;t do well is handle large binary files. I&rsquo;ll spare the gory details of this, but storing a frequently edited video file (such as a cutscene or animation for a video game) makes <code>git</code> <em>very</em> unhappy. Hence, Perforce.</p>
+<h1 id="prerequisites">Prerequisites<a href="index.html#prerequisites" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h1>
+<p>For this tutorial we&rsquo;re going to assume that you have installed <code>docker</code> and <code>docker-compose</code> and have the <code>docker</code> daemon running on your machine. This is normally the part where I would put simple instructions on how to do that, but Docker is reorganizing its packages and install processes and my instructions would be quickly outdated.</p>
+<p>We&rsquo;ll also assume that you&rsquo;re familiar with very basic command line navigation. If you&rsquo;re not, you probably shouldn&rsquo;t be trying to administer systems and should consult with someone that does.</p>
+<p>If you want to learn, I <strong>highly</strong> recommend going to <a href="https://linuxcommand.org/">linuxcommand.org</a>. That&rsquo;s where I learned basic terminal literacy, and you can go through everything you need to know in the span of a few hours.</p>
+<p><em><strong>Update 2021/12/122</strong></em> - Marc Wilson from <a href="https://www.pcwdld.com">PCWDLD</a> sent me an email with a Linux commandline cheatsheet that should be useful for people that want a quicker way to get some shell literacy. You can <a href="https://www.pcwdld.com/linux-commands-cheat-sheet">check it out here</a>. Thanks Marc!!</p>
+<p>That aside, let&rsquo;s dig into it!</p>
+<h1 id="the-problems-with-perforce">The problems with Perforce<a href="index.html#the-problems-with-perforce" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h1>
+<p>Perforce makes a lot of assumptions about how it&rsquo;s going to be run. It assumes that it is going to be a daemon, managed manually by CLI interactions or an admin interface. That doesn&rsquo;t translate well to Docker, where a &ldquo;system&rdquo; only exists to do one thing and its lifecycle is managed automatically.</p>
+<p>It also places files all over the system. You can configure a data directory, but its database is initialized from where the start command is run instead of in a dedicated location and all non-volume files in a Docker container are ephemeral.</p>
+<p>This is fairly typical behavior and works well for installing the server on a bare metal machine, but nowadays it is often desirable to isolate all of your services from each other.</p>
+<p>Let&rsquo;s dig into solving this problem.</p>
+<h1 id="creating-our-service">Creating our service<a href="index.html#creating-our-service" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h1>
+<p>Let&rsquo;s create a <code>docker-compose</code> project. This translates to doing a few very simple operations.</p>
+
+
+
+  <div class="collapsable-code">
+    <input id="752439186" type="checkbox"  />
+    <label for="752439186">
+      <span class="collapsable-code__language">bash</span>
+      
+      <span class="collapsable-code__toggle" data-label-expand="△" data-label-collapse="▽"></span>
+    </label>
+    <pre class="language-bash" ><code>
+$ mkdir perforce &amp;&amp; cd perforce
+$ touch docker-compose.yml
+$ touch Dockerfile
+</code></pre>
+  </div>
+
+
+<p>Now we need to make some volumes. A <code>volume</code>, to Docker, is a folder inside the container that is physically located outside of the container. That means we can have persistent data and configuration directories.</p>
+<p>Let&rsquo;s define our service here.</p>
+
+
+
+  <div class="collapsable-code">
+    <input id="167438259" type="checkbox"  />
+    <label for="167438259">
+      <span class="collapsable-code__language">yaml</span>
+      <span class="collapsable-code__title">docker-compose.yml</span>
+      <span class="collapsable-code__toggle" data-label-expand="△" data-label-collapse="▽"></span>
+    </label>
+    <pre class="language-yaml" ><code>
+version: &#39;3&#39;
+services:
+	perforce:
+		build:
+			context: .
+			dockerfile: Dockerfile
+		restart: unless-stopped
+		volumes:
+      #- ./p4dctl.conf.d:/etc/perforce/p4dctl.conf.d
+			- ./perforce-data:/perforce-data
+			- ./dbs:/dbs
+		environment:
+			- P4PORT=1666
+			- P4ROOT=/perforce-data
+		ports:
+			- 1666:1666
+</code></pre>
+  </div>
+
+
+<p>Here we&rsquo;ve defined our service with three volumes - one for configuration, one for data, and one for what Perforce refers to as &ldquo;databases.&rdquo;</p>
+<p>One of them, the configuration volume, has been commented out so that it does not mount yet. This is because we need to generate those files before running our server for the first time.</p>
+<p>Let&rsquo;s go and make those directories now.</p>
+
+
+
+  <div class="collapsable-code">
+    <input id="653192874" type="checkbox"  />
+    <label for="653192874">
+      <span class="collapsable-code__language">bash</span>
+      
+      <span class="collapsable-code__toggle" data-label-expand="△" data-label-collapse="▽"></span>
+    </label>
+    <pre class="language-bash" ><code>
+$ mkdir p4dctl.conf.d
+$ mkdir perforce-data
+$ mkdir dbs
+</code></pre>
+  </div>
+
+
+<p>And that&rsquo;s&hellip;actually it! Now we need to figure out what our image looks like.</p>
+<h1 id="making-our-image">Making our image<a href="index.html#making-our-image" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h1>
+<p>Perforce has some <a href="https://www.perforce.com/perforce/doc.current/manuals/p4sag/Content/P4SAG/install.linux.packages.install.html">good documentation for installing it on Ubuntu</a>, and luckily for us, there&rsquo;s an official Ubuntu docker image that we can base ours off of.</p>
+<p>Let&rsquo;s go fill out that <code>Dockerfile</code>!</p>
+
+
+
+  <div class="collapsable-code">
+    <input id="381457962" type="checkbox"  />
+    <label for="381457962">
+      <span class="collapsable-code__language">dockerfile</span>
+      <span class="collapsable-code__title">Dockerfile</span>
+      <span class="collapsable-code__toggle" data-label-expand="△" data-label-collapse="▽"></span>
+    </label>
+    <pre class="language-dockerfile" ><code>
+FROM ubuntu:focal
+
+# Update our main system
+
+RUN apt-get update
+RUN apt-get dist-upgrade -y
+
+# Get some dependencies for adding apt repositories
+
+RUN apt-get install -y wget gnupg
+
+# Add perforce repo
+
+RUN wget -qO - https://package.perforce.com/perforce.pubkey | apt-key add -
+RUN echo &#39;deb http://package.perforce.com/apt/ubuntu focal release&#39; &gt; /etc/apt/sources.list.d/perforce.list
+RUN apt-get update
+
+# Actually install it
+
+RUN apt-get install -y helix-p4d
+
+# Go into our directory, start Perforce, and view the log outputs
+
+CMD chown -R perforce:perforce /perforce-data &amp;&amp; cd /dbs &amp;&amp; p4dctl start master &amp;&amp; tail -F /perforce-data/logs/log
+</code></pre>
+  </div>
+
+
+<p>Aaaaaaaaand that&rsquo;s that! With <code>docker-compose</code>, volumes are not mounted until you reach the container entrypoint. The entrypoint, in this case, is defined with the <code>CMD</code> directive. As such, we have to enter our <code>dbs</code> directory there and no earlier.</p>
+<h1 id="populating-the-configuration-directory">Populating the configuration directory<a href="index.html#populating-the-configuration-directory" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h1>
+<p>Perforce, in all its majesty, will create files in our <code>etc</code> directory during installation that it requires to run its configuration script. Fortunately, we can grab those from our newly built image and stash them in our volume mount.</p>
+
+
+
+  <div class="collapsable-code">
+    <input id="831542796" type="checkbox"  />
+    <label for="831542796">
+      <span class="collapsable-code__language">bash</span>
+      
+      <span class="collapsable-code__toggle" data-label-expand="△" data-label-collapse="▽"></span>
+    </label>
+    <pre class="language-bash" ><code>
+$ docker-compose run -T --rm perforce tar czf - -C /etc/perforce/p4dctl.conf.d  . | tar xvzf - -C p4dctl.conf.d/
+</code></pre>
+  </div>
+
+
+<p>Now we just need to uncomment that last volume from our <code>docker-compose</code> service definition to have those files mounted in the running container:</p>
+
+
+
+  <div class="collapsable-code">
+    <input id="839271465" type="checkbox"  />
+    <label for="839271465">
+      <span class="collapsable-code__language">yaml</span>
+      <span class="collapsable-code__title">docker-compose.yml</span>
+      <span class="collapsable-code__toggle" data-label-expand="△" data-label-collapse="▽"></span>
+    </label>
+    <pre class="language-yaml" ><code>
+version: &#39;3&#39;
+services:
+	perforce:
+		build:
+			context: .
+			dockerfile: Dockerfile
+		restart: unless-stopped
+		volumes:
+      - ./p4dctl.conf.d:/etc/perforce/p4dctl.conf.d
+			- ./perforce-data:/perforce-data
+			- ./dbs:/dbs
+		environment:
+			- P4PORT=1666
+			- P4ROOT=/perforce-data
+		ports:
+			- 1666:1666
+</code></pre>
+  </div>
+
+
+<p>Now we&rsquo;re ready to actually configure our server! Perforce includes a nice little helper script for this.</p>
+
+
+
+  <div class="collapsable-code">
+    <input id="538617249" type="checkbox"  />
+    <label for="538617249">
+      <span class="collapsable-code__language">bash</span>
+      
+      <span class="collapsable-code__toggle" data-label-expand="△" data-label-collapse="▽"></span>
+    </label>
+    <pre class="language-bash" ><code>
+$ docker-compose run --rm perforce /opt/perforce/sbin/configure-helix-p4d.sh
+</code></pre>
+  </div>
+
+
+<p>Configure the server name as <code>master</code>, ensure that the server root is set to <code>/perforce-data</code>, and that the port is set to <code>1666</code>. You&rsquo;ll also set up superuser credentials for your server during this step.</p>
+<h1 id="spinning-it-up">Spinning it up<a href="index.html#spinning-it-up" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h1>
+<p>Spinning up your new service is almost disappointingly easy. We just set it running, and leave it be.</p>
+
+
+
+  <div class="collapsable-code">
+    <input id="842653719" type="checkbox"  />
+    <label for="842653719">
+      <span class="collapsable-code__language">bash</span>
+      
+      <span class="collapsable-code__toggle" data-label-expand="△" data-label-collapse="▽"></span>
+    </label>
+    <pre class="language-bash" ><code>
+$ docker-compose up --build -d
+</code></pre>
+  </div>
+
+
+<p>And that&rsquo;s it! You&rsquo;ve now got a Perforce server running on port <code>1666</code> on this machine. Go make the game of your dreams!</p>
+<h1 id="troubleshooting">Troubleshooting<a href="index.html#troubleshooting" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h1>
+<p>A number of issues can potentially come up during this. Try spinning up your service without detaching it (<code>docker-compose up --build</code> - note the lack of <code>-d</code> in that command) to see the log output. If it&rsquo;s running but detached, you can run <code>docker-compose logs -f</code> to view the log output in real time.</p>
+<h2 id="p4port-is-not-set">&ldquo;P4PORT is not set&rdquo;<a href="index.html#p4port-is-not-set" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<p>If you get an error stating that <code>P4PORT</code> is not set, that means that it is unable to access its data ddirectory. This is because Perforce has its own user ID and group ID that it runs under, and there is no simple way to change that without manually editing the configuration. The default UID and GID numbers are <code>101</code>, and you can change ownership of that directory by running the following command -</p>
+
+
+
+  <div class="collapsable-code">
+    <input id="638724159" type="checkbox"  />
+    <label for="638724159">
+      <span class="collapsable-code__language">bash</span>
+      
+      <span class="collapsable-code__toggle" data-label-expand="△" data-label-collapse="▽"></span>
+    </label>
+    <pre class="language-bash" ><code>
+$ sudo chown -R 101:101 perforce-data
+</code></pre>
+  </div>
+
+
+<p>&hellip;although the latest revision of the <code>Dockerfile</code> in this post does do that by itself. That, however, can cause the following problem -</p>
+<h2 id="cannot-read-perforce-data-or-cant-stat-perforce-data">&ldquo;Cannot read <code>perforce-data</code>&rdquo; (or &ldquo;can&rsquo;t stat <code>perforce-data</code>&quot;)<a href="index.html#cannot-read-perforce-data-or-cant-stat-perforce-data" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<p>You&rsquo;re running Docker as an unprivileged user and are unable to read the generated perforce data files. There are two options to resolve this, with the first being much easier -</p>
+<ol>
+<li>Run the service as root (<code>sudo docker-compose up --build -d</code>)</li>
+<li>Add your user to a group with GID <code>101</code></li>
+</ol>
+<p>You can also modify the perforce configuration file (<code>master.conf</code> in your <code>p4dctl.conf.d</code> directory) to set the <code>Umask</code> and <code>Owner</code> fields to something more compatible with your host system user layout, but that&rsquo;s significantly more involved and will not be covered here. Perforce <em>does</em> validate that the <code>Umask</code> and <code>Owner</code> fields are correct, so if your service does not start after messing with that, you have done something wrong in your permissions configuration.</p>
+<p>I do not personally use Perforce and devised this tutorial for a friend, but I have verified on multiple environments that it is working. If you find any errors or have any questions, always feel free to <a href="https://aricodes.net/contact">email me</a>!</p>
+
+      </div></div>
+
+  
+  
+<div class="pagination">
+    <div class="pagination__title">
+        <span class="pagination__title-h"></span>
+        <hr />
+    </div>
+    <div class="pagination__buttons">
+        
+        <span class="button previous">
+            <a href="https://aricodes.net/posts/remote-controlling-a-nintendo-switch/">
+                <span class="button__icon">←</span>
+                <span class="button__text">Remote Controlling a Nintendo Switch for Fun and Profit</span>
+            </a>
+        </span>
+        
+        
+        <span class="button next">
+            <a href="https://aricodes.net/posts/python-package-from-scratch/">
+                <span class="button__text">Making a Modern Python Package with Poetry</span>
+                <span class="button__icon">→</span>
+            </a>
+        </span>
+        
+    </div>
+</div>
+
+  
+
+  
+
+</div>
+
+  </div>
+
+  
+    <footer class="footer">
+  <div class="footer__inner">
+    
+      <div class="copyright">
+        <span>© 2022 Powered by <a href="http://gohugo.io">Hugo</a></span>
+    
+        <span>:: Theme made by <a href="https://twitter.com/panr">panr</a></span>
+      </div>
+  </div>
+</footer>
+
+<script src="../../assets/main.js"></script>
+<script src="../../assets/prism.js"></script>
+
+
+
+
+<i>Ari is a software engineer and systems administrator focused on building the future of web applications. If you found this interesting, please consider <a href="https://ko-fi.com/aricodes">buying them a coffee</a>!</i>
+
+<div style="margin-top: 16px;"></div>
+
+<i>If you have any questions or business inquiries, please direct them to <a href="mailto:ari@aricodes.net">ari@aricodes.net</a></i>
+
+<div style="margin-top: 16px;"></div>
+
+<i>Subscribe via <a href="https://aricodes.net/index.xml">RSS</a> to get updates whenever I post something new!</i>
+
+
+  
+</div>
+
+</body>
+</html>

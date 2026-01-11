@@ -1,5 +1,6 @@
 /adminscripts/Syrupy/*.log
 /adminscripts/Syrupy/*.raw
+/adminscripts/Syrupy/Syrupy
 /adminscripts/hub_token
 /ftp/conf-*
 /ftp/home-*
@@ -9,6 +10,7 @@
 /notes/standardfile.db
 /notes/standardfile.yml
 /recipes/mealie
+/syncthing/data
 /teamspeak/data
 /teamspeak/dbvolume
 /terraria/config

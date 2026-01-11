@@ -36,3 +36,7 @@
 #  serviceName = "traefik-traefik"
 [log]
   level = "DEBUG"
+
+[http.serversTransports.ignorecert]
+  insecureSkipVerify = true
+

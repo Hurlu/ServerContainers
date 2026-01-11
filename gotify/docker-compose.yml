@@ -1,0 +1,20 @@
+networks:
+  traefik_default:
+    external: true
+
+services:
+  gotify:
+    container_name: gotify
+    image: gotify/server:2.5.0
+    restart: always
+    env_file: ./secrets/gotify.secret
+    networks:
+      - traefik_default
+    volumes:
+      - ./config.yml:/etc/gotify/config.yml
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.gotify.rule=Host(`gotify.hugowillaume.com`)"
+      - "traefik.http.routers.gotify.entrypoints=websecure"
+      - "traefik.http.routers.gotify.tls.certresolver=myhttpchallenge"
+      - "traefik.http.services.gotify.loadbalancer.server.port=80"

@@ -8,8 +8,8 @@ networks:
 
 services:
   joplin:
-    container_name: joplin
     image: joplin/server:2.14.1-beta
+    container_name: joplin
     restart: always
     env_file: ./secrets/joplin.secret
     networks:
@@ -25,8 +25,9 @@ services:
       - "traefik.http.services.joplin.loadbalancer.server.port=22300"
 
   db:
-    container_name: joplin_db
     image: postgres:16
+    container_name: joplin_db
+    restart: always
     networks:
       - joplin_default
     env_file: ./secrets/joplin_db.secret
@@ -34,4 +35,3 @@ services:
         - ./joplin_data/postgres:/var/lib/postgresql/data
 #    ports:
 #        - "5432:5432"
-    restart: always

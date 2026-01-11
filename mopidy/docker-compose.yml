@@ -1,0 +1,78 @@
+networks:
+  traefik_default:
+    external: true
+
+services:
+  snapserver:
+    image: jaedb/snapserver
+    container_name: snapserver
+    restart:always
+    depends_on:
+      mopidy:
+        condition: service_healthy
+    ports:
+      - 1704
+      - 1705
+      - 1780
+    volumes:
+      - /tmp/snapserver:/tmp
+      - ./docker/snapserver/snapserver.conf:/etc/snapserver.conf
+      - ./docker/snapserver/snapserver.json:/root/.config/snapserver/server.json
+    networks:
+      - traefik_default
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.snapserver.rule=Host(`snap.hang.hugowillaume.com`)"
+      - "traefik.http.routers.snapserver.entrypoints=websecure"
+      - "traefik.http.routers.snapserver.tls.certresolver=myhttpchallenge"
+      - "traefik.http.services.snapserver.loadbalancer.server.port=1780"
+
+  mopidy:
+    container_name: mopidy
+    restart:always
+    build: ./
+#    image: jaedb/iris:3.70
+    environment:
+      - PIP_PACKAGES=Mopidy-Party Mopidy-Local
+    ports:
+      - 6600
+      - 6680
+    healthcheck:
+      test: curl -f http://localhost:6680/iris/http/get_config || exit 1
+      timeout: 5s
+      retries: 5
+    volumes:
+      # - ./mopidy/iris:/iris/mopidy/iris # To use a locally-built UI 
+      - ./docker/mopidy/iris:/var/lib/mopidy/iris # Iris-specific storage
+      - ./docker/mopidy/m3u:/var/lib/mopidy/m3u # To persist local playlists
+      - ./docker/mopidy/mopidy.conf:/config/mopidy.conf
+      - /mnt/Music:/var/lib/mopidy/media
+      - /tmp/snapserver:/tmp
+    networks:
+      - traefik_default
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.mopidy.rule=Host(`player.hang.hugowillaume.com`)"
+      - "traefik.http.routers.mopidy.entrypoints=websecure"
+      - "traefik.http.routers.mopidy.tls.certresolver=myhttpchallenge"
+      - "traefik.http.services.mopidy.loadbalancer.server.port=6680"
+
+  guide:
+    image: dannyben/madness:1.2.5
+    container_name: hang_guide
+    restart:always
+    volumes:
+      - ./markdown:/docs
+    networks:
+      - traefik_default
+    command: server
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.hangguide.rule=Host(`guide.hang.hugowillaume.com`)"
+      - "traefik.http.routers.hangguide.entrypoints=websecure"
+      - "traefik.http.routers.hangguide.tls.certresolver=myhttpchallenge"
+      - "traefik.http.services.hangguide.loadbalancer.server.port=3000"
+#      - "traefik.http.routers.hangguide.middlewares=traefik-forward-auth"
+
+    
+
