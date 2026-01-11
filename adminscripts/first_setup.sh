@@ -1,4 +1,4 @@
-#!bin/bash
+#!/bin/bash
 #let me inside of [gitrepo]/adminscripts plz :)
 SCRIPT_DIR=$(cd $(dirname "${BASH_SOURCE[0]}") && pwd)
 GLOB_DIR=$SCRIPT_DIR/..
@@ -18,18 +18,18 @@ echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.
   $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 apt update;
 sudo apt install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin;
-mkdir ~/Downloads;
+mkdir ~/downloads;
 git remote add myserv git.hugowillaume.com/Hurlu/ServerContainers;
 # setup my rclone remote named "Gdrive" with advanced option root folder 1Vtw9u>
 # as well as a remote named "rootGdrive" with readonly access to just get my backups here too
 rclone config
 # reinstall my backup data
-cd ~/Downloads;
+cd ~/downloads;
 rclone copy Gdrive: .;
 cp standardfile.db $GLOB_DIR/notes/.;
 cp mealie.zip $GLOB_DIR/recipes/.;
 cp gitea_backup.zip $GLOB_DIR/gitea/.;
-rm ~/Downloads/*
+rm ~/downloads/*
 cd $GLOB_DIR/recipes
 unzip -o mealie.zip
 cd $GLOB_DIR/gitea
