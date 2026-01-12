@@ -89,3 +89,5 @@ docker exec gitea \
 /bin/bash -c "chown -R git:git /data"
 
 sudo rm -rf gitea_data/unzipped
+
+read -r -p "You now can restart your container, and it should be all good ! (bye/bye)"
