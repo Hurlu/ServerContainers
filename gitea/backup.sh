@@ -4,6 +4,6 @@ docker exec -u git -w "/data/git" $(docker ps -qf "name=^/gitea$") bash -c "/app
 cd $SCRIPT_DIR;
 mv gitea_data/git/gitea-dump* gitea_backup.zip;
 rm -f gitea_data/git/gitea-dump*;
-rclone copy gitea_backup.zip Gdrive:/;
+rclone copy gitea_backup.zip GDrive:/;
 rm -f gitea_backup.zip;
 

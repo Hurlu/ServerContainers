@@ -22,3 +22,5 @@ echo '{"channel_name": "Le Coco", "channel_flag_permanent":1}' | $BASE_COMMAND/c
 echo
 echo '{"channel_name": "STREAM ON", "channel_flag_permanent":1}' | $BASE_COMMAND/channelcreate$API_KEY
 echo
+echo '{"channel_name": "FEBO", "channel_flag_permanent":1}' | $BASE_COMMAND/channelcreate$API_KEY
+echo

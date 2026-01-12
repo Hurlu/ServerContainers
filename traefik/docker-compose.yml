@@ -6,7 +6,7 @@ services:
   traefik:
     image: "traefik:v2.5.3"
     container_name: "traefik"
-    restart:always
+    restart: always
     networks:
       - default
     ports:
@@ -31,7 +31,7 @@ services:
   traefik-forward-auth:
     image: thomseddon/traefik-forward-auth:2
     container_name: auth_forward
-    restart:always
+    restart: always
     networks:
       - default
     env_file: secrets/traefik_forward_auth.secret

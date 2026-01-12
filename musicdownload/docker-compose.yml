@@ -1,14 +1,14 @@
 services:
   hangyoutube:
     container_name: hang_youtube
-    restart:always
+    restart: always
     image: ghcr.io/alexta69/metube:2025.12.14
     mem_limit: 1400m
     cpus: 0.8
     networks:
       - traefik_default
     volumes:
-      - /mnt/Music:/downloads
+      - /home/hurlu/music:/downloads
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.hangyoutube.rule=Host(`youtube.hang.hugowillaume.com`)"
@@ -21,11 +21,11 @@ services:
   hangspotify:
     container_name: hang_spotify
     image: ghcr.io/henriquesebastiao/downtify:1.1.1
-    restart:always
+    restart: always
     networks:
       - traefik_default
     volumes:
-      - /mnt/Music:/downloads
+      - /home/hurlu/music:/downloads
     mem_limit: 1400m
     cpus: 0.8
     labels:

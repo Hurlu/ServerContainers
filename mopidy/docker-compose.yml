@@ -6,7 +6,7 @@ services:
   snapserver:
     image: jaedb/snapserver
     container_name: snapserver
-    restart:always
+    restart: always
     depends_on:
       mopidy:
         condition: service_healthy
@@ -29,7 +29,7 @@ services:
 
   mopidy:
     container_name: mopidy
-    restart:always
+    restart: always
     build: ./
 #    image: jaedb/iris:3.70
     environment:
@@ -46,7 +46,7 @@ services:
       - ./docker/mopidy/iris:/var/lib/mopidy/iris # Iris-specific storage
       - ./docker/mopidy/m3u:/var/lib/mopidy/m3u # To persist local playlists
       - ./docker/mopidy/mopidy.conf:/config/mopidy.conf
-      - /mnt/Music:/var/lib/mopidy/media
+      - /home/hurlu/music:/var/lib/mopidy/media
       - /tmp/snapserver:/tmp
     networks:
       - traefik_default
@@ -60,7 +60,7 @@ services:
   guide:
     image: dannyben/madness:1.2.5
     container_name: hang_guide
-    restart:always
+    restart: always
     volumes:
       - ./markdown:/docs
     networks:

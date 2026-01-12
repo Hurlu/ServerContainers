@@ -2,11 +2,11 @@ services:
   hangftp:
     image: drakkan/sftpgo:v2.6.6-alpine-slim
     container_name: hang_ftp
-    restart:always
+    restart: always
     networks:
       - traefik_default
     volumes:
-      - /mnt/Music:/srv/sftpgo/data
+      - /home/hurlu/music:/srv/sftpgo/data
       - ./conf-hangsftpgo:/var/lib/sftpgo
     labels:
       - "traefik.enable=true"

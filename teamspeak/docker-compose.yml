@@ -10,7 +10,6 @@ services:
       - 9987:9987/udp       #udp voice port
       - 10080:10080
       - 30033:30033         #file transfer port
-    restart: unless-stopped
     env_file: ./secrets/teamspeak.secret
     volumes:
       - ./data:/var/ts3server/
